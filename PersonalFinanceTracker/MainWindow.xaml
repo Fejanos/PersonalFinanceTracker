@@ -8,10 +8,6 @@
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource BackgroundBrush}">
 
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
-
     <!-- DataTemplates: which View belongs to which ViewModel -->
     <Window.Resources>
         <DataTemplate DataType="{x:Type vm:DashboardViewModel}">
