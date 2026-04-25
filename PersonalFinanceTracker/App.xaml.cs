@@ -19,6 +19,7 @@ public partial class App : Application
         collection.AddDbContext<AppDbContext>(opt =>
             opt.UseSqlite("Data Source=finance.db"));
         collection.AddSingleton<CurrencyService>();
+        collection.AddSingleton<CsvExportService>();
         collection.AddSingleton<MainViewModel>();
         _services = collection.BuildServiceProvider();
 

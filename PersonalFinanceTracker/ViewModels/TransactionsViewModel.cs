@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using PersonalFinanceTracker.Data;
 using PersonalFinanceTracker.Models;
 using PersonalFinanceTracker.Services;
@@ -13,6 +15,7 @@ public partial class TransactionsViewModel : ObservableObject
 {
     private readonly AppDbContext _db;
     private readonly CurrencyService _currency;
+    private readonly CsvExportService _csv;
 
     [ObservableProperty] private ObservableCollection<TransactionRow> _rows = [];
     [ObservableProperty] private ObservableCollection<Category> _categories = [];
@@ -29,10 +32,11 @@ public partial class TransactionsViewModel : ObservableObject
 
     public string AmountLabel => $"Amount ({_currency.CurrentCurrency.Symbol})";
 
-    public TransactionsViewModel(AppDbContext db, CurrencyService currency)
+    public TransactionsViewModel(AppDbContext db, CurrencyService currency, CsvExportService csv)
     {
         _db = db;
         _currency = currency;
+        _csv = csv;
         _currency.PropertyChanged += OnCurrencyChanged;
         _ = LoadAsync();
     }
@@ -79,6 +83,41 @@ public partial class TransactionsViewModel : ObservableObject
         NewDate        = DateTime.Today;
 
         await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task ExportCsvAsync()
+    {
+        var dialog = new SaveFileDialog
+        {
+            Filter   = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+            FileName = $"transactions-{DateTime.Now:yyyy-MM-dd}.csv",
+            Title    = "Export transactions"
+        };
+        if (dialog.ShowDialog() != true) return;
+
+        var transactions = await _db.Transactions
+            .Include(t => t.Category)
+            .OrderByDescending(t => t.Date)
+            .ToListAsync();
+
+        try
+        {
+            await _csv.ExportAsync(transactions, dialog.FileName);
+            MessageBox.Show(
+                $"Exported {transactions.Count} transactions to:\n{dialog.FileName}",
+                "Export complete",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"Failed to export CSV:\n{ex.Message}",
+                "Export error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
     }
 
     [RelayCommand]

@@ -19,11 +19,11 @@ public partial class MainViewModel : ObservableObject
     public TransactionsViewModel TransactionsVM { get; }
     public CategoriesViewModel CategoriesVM { get; }
 
-    public MainViewModel(AppDbContext db, CurrencyService currency)
+    public MainViewModel(AppDbContext db, CurrencyService currency, CsvExportService csv)
     {
         Currency       = currency;
         DashboardVM    = new DashboardViewModel(db, currency);
-        TransactionsVM = new TransactionsViewModel(db, currency);
+        TransactionsVM = new TransactionsViewModel(db, currency, csv);
         CategoriesVM   = new CategoriesViewModel(db);
         CurrentPage    = DashboardVM;
     }
