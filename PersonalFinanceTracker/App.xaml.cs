@@ -20,6 +20,7 @@ public partial class App : Application
             opt.UseSqlite("Data Source=finance.db"));
         collection.AddSingleton<CurrencyService>();
         collection.AddSingleton<CsvExportService>();
+        collection.AddSingleton<GeminiService>();
         collection.AddSingleton<MainViewModel>();
         _services = collection.BuildServiceProvider();
 

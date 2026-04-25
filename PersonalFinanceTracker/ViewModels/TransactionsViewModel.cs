@@ -16,6 +16,7 @@ public partial class TransactionsViewModel : ObservableObject
     private readonly AppDbContext _db;
     private readonly CurrencyService _currency;
     private readonly CsvExportService _csv;
+    private readonly GeminiService _gemini;
 
     [ObservableProperty] private ObservableCollection<TransactionRow> _rows = [];
     [ObservableProperty] private ObservableCollection<Category> _categories = [];
@@ -27,16 +28,18 @@ public partial class TransactionsViewModel : ObservableObject
     [ObservableProperty] private TransactionType _newType = TransactionType.Expense;
     [ObservableProperty] private Category? _newCategory;
     [ObservableProperty] private string? _newNote;
+    [ObservableProperty] private bool _isSuggesting;
 
     public List<TransactionType> TransactionTypes { get; } = [TransactionType.Income, TransactionType.Expense];
 
     public string AmountLabel => $"Amount ({_currency.CurrentCurrency.Symbol})";
 
-    public TransactionsViewModel(AppDbContext db, CurrencyService currency, CsvExportService csv)
+    public TransactionsViewModel(AppDbContext db, CurrencyService currency, CsvExportService csv, GeminiService gemini)
     {
         _db = db;
         _currency = currency;
         _csv = csv;
+        _gemini = gemini;
         _currency.PropertyChanged += OnCurrencyChanged;
         _ = LoadAsync();
     }
@@ -83,6 +86,48 @@ public partial class TransactionsViewModel : ObservableObject
         NewDate        = DateTime.Today;
 
         await LoadAsync();
+    }
+
+    [RelayCommand]
+    private async Task SuggestCategoryAsync()
+    {
+        if (string.IsNullOrWhiteSpace(NewDescription)) return;
+
+        if (!_gemini.IsConfigured)
+        {
+            MessageBox.Show(
+                "Gemini API key is not set. Open Services/GeminiService.cs and replace the placeholder.",
+                "AI not configured",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+            return;
+        }
+
+        try
+        {
+            IsSuggesting = true;
+            var suggestion = await _gemini.SuggestCategoryAsync(
+                NewDescription,
+                Categories.Select(c => c.Name));
+
+            if (string.IsNullOrWhiteSpace(suggestion)) return;
+
+            var match = Categories.FirstOrDefault(c =>
+                string.Equals(c.Name, suggestion, StringComparison.OrdinalIgnoreCase));
+            if (match is not null) NewCategory = match;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                $"AI suggestion failed:\n{ex.Message}",
+                "AI error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsSuggesting = false;
+        }
     }
 
     [RelayCommand]

@@ -37,6 +37,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -62,6 +63,22 @@
                               SelectedItem="{Binding NewCategory}"
                               DisplayMemberPath="Name"/>
                     <Button   Grid.Row="1" Grid.Column="4" Margin="8,0,0,0"
+                              ToolTip="Suggest category from description (AI)"
+                              Command="{Binding SuggestCategoryCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+                                <Setter Property="Background" Value="#7E57C2"/>
+                                <Setter Property="Content"    Value="✨ AI"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSuggesting}" Value="True">
+                                        <Setter Property="Content"   Value="..."/>
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button   Grid.Row="1" Grid.Column="5" Margin="8,0,0,0"
                               Style="{StaticResource PrimaryButton}"
                               Content="+ Add"
                               Command="{Binding AddTransactionCommand}"/>
