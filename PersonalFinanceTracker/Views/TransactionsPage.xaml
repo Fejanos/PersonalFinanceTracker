@@ -22,58 +22,56 @@
             <StackPanel>
                 <TextBlock Text="New transaction" FontSize="16" FontWeight="SemiBold"
                            Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16"/>
+
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                    <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                        <TextBlock Text="Description" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
+                    <!-- Labels -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource FieldLabel}" Text="Description" Margin="0,0,8,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource FieldLabel}" Text="{Binding AmountLabel}" Margin="4,0,4,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Style="{StaticResource FieldLabel}" Text="Type" Margin="4,0,4,6"/>
+                    <TextBlock Grid.Row="0" Grid.Column="3" Style="{StaticResource FieldLabel}" Text="Category" Margin="4,0,4,6"/>
 
-                    <StackPanel Grid.Column="1" Margin="4,0">
-                        <TextBlock Text="Amount (Ft)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                        <TextBox Text="{Binding NewAmount, UpdateSourceTrigger=PropertyChanged}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2" Margin="4,0">
-                        <TextBlock Text="Type" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding TransactionTypes}"
-                                  SelectedItem="{Binding NewType}"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="3" Margin="4,0">
-                        <TextBlock Text="Category" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
-                        <ComboBox ItemsSource="{Binding Categories}"
-                                  SelectedItem="{Binding NewCategory}"
-                                  DisplayMemberPath="Name"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="4" Margin="8,0,0,0" VerticalAlignment="Bottom">
-                        <TextBlock Text=" " FontSize="12" Margin="0,0,0,4"/>
-                        <Button Style="{StaticResource PrimaryButton}"
-                                Content="+ Add"
-                                Command="{Binding AddTransactionCommand}"/>
-                    </StackPanel>
+                    <!-- Inputs -->
+                    <TextBox  Grid.Row="1" Grid.Column="0" Margin="0,0,8,0"
+                              Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox  Grid.Row="1" Grid.Column="1" Margin="4,0"
+                              Text="{Binding NewAmount, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox Grid.Row="1" Grid.Column="2" Margin="4,0"
+                              ItemsSource="{Binding TransactionTypes}"
+                              SelectedItem="{Binding NewType}"/>
+                    <ComboBox Grid.Row="1" Grid.Column="3" Margin="4,0"
+                              ItemsSource="{Binding Categories}"
+                              SelectedItem="{Binding NewCategory}"
+                              DisplayMemberPath="Name"/>
+                    <Button   Grid.Row="1" Grid.Column="4" Margin="8,0,0,0"
+                              Style="{StaticResource PrimaryButton}"
+                              Content="+ Add"
+                              Command="{Binding AddTransactionCommand}"/>
                 </Grid>
             </StackPanel>
         </Border>
 
         <!-- Transactions list -->
         <Border Grid.Row="2" Style="{StaticResource CardStyle}">
-            <DataGrid ItemsSource="{Binding Transactions}"
-                      SelectedItem="{Binding SelectedTransaction}">
+            <DataGrid ItemsSource="{Binding Rows}"
+                      SelectedItem="{Binding SelectedRow}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Date" Width="110"
                                         Binding="{Binding Date, StringFormat=yyyy.MM.dd}"/>
                     <DataGridTextColumn Header="Description" Width="*"
                                         Binding="{Binding Description}"/>
-                    <DataGridTemplateColumn Header="Category" Width="160">
+                    <DataGridTemplateColumn Header="Category" Width="170">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -106,10 +104,10 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Amount" Width="130">
+                    <DataGridTemplateColumn Header="Amount" Width="160">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Amount, StringFormat={}{0:N0} Ft}" FontWeight="SemiBold">
+                                <TextBlock Text="{Binding FormattedAmount}" FontWeight="SemiBold">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
@@ -129,8 +127,7 @@
                     <DataGridTemplateColumn Header="" Width="60">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Style="{StaticResource DangerButton}" Content="🗑"
-                                        Padding="8,4" FontSize="12"
+                                <Button Style="{StaticResource DangerButton}" Content="🗑" FontSize="12"
                                         Command="{Binding DataContext.DeleteTransactionCommand,
                                                   RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                         CommandParameter="{Binding}"/>

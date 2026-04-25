@@ -1,34 +1,39 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using PersonalFinanceTracker.Data;
 using PersonalFinanceTracker.Models;
+using PersonalFinanceTracker.Services;
 
 namespace PersonalFinanceTracker.ViewModels;
 
 public partial class TransactionsViewModel : ObservableObject
 {
     private readonly AppDbContext _db;
+    private readonly CurrencyService _currency;
 
-    [ObservableProperty] private ObservableCollection<Transaction> _transactions = [];
+    [ObservableProperty] private ObservableCollection<TransactionRow> _rows = [];
     [ObservableProperty] private ObservableCollection<Category> _categories = [];
-    [ObservableProperty] private Transaction? _selectedTransaction;
+    [ObservableProperty] private TransactionRow? _selectedRow;
 
-    // New transaction form fields
     [ObservableProperty] private decimal _newAmount;
     [ObservableProperty] private string _newDescription = string.Empty;
     [ObservableProperty] private DateTime _newDate = DateTime.Today;
     [ObservableProperty] private TransactionType _newType = TransactionType.Expense;
     [ObservableProperty] private Category? _newCategory;
     [ObservableProperty] private string? _newNote;
-    [ObservableProperty] private string _filterText = string.Empty;
 
     public List<TransactionType> TransactionTypes { get; } = [TransactionType.Income, TransactionType.Expense];
 
-    public TransactionsViewModel(AppDbContext db)
+    public string AmountLabel => $"Amount ({_currency.CurrentCurrency.Symbol})";
+
+    public TransactionsViewModel(AppDbContext db, CurrencyService currency)
     {
         _db = db;
+        _currency = currency;
+        _currency.PropertyChanged += OnCurrencyChanged;
         _ = LoadAsync();
     }
 
@@ -42,9 +47,10 @@ public partial class TransactionsViewModel : ObservableObject
 
         var categories = await _db.Categories.OrderBy(c => c.Name).ToListAsync();
 
-        Transactions = new ObservableCollection<Transaction>(transactions);
-        Categories   = new ObservableCollection<Category>(categories);
-        NewCategory  = Categories.FirstOrDefault();
+        Rows = new ObservableCollection<TransactionRow>(
+            transactions.Select(t => new TransactionRow(t, _currency)));
+        Categories  = new ObservableCollection<Category>(categories);
+        NewCategory = Categories.FirstOrDefault();
     }
 
     [RelayCommand]
@@ -53,17 +59,18 @@ public partial class TransactionsViewModel : ObservableObject
         if (NewCategory is null || NewAmount <= 0 || string.IsNullOrWhiteSpace(NewDescription))
             return;
 
-        var transaction = new Transaction
+        // Convert from the user's display currency to the base currency for storage.
+        var amountInBase = _currency.ToBase(NewAmount);
+
+        _db.Transactions.Add(new Transaction
         {
-            Amount      = NewAmount,
+            Amount      = amountInBase,
             Type        = NewType,
             Description = NewDescription,
             Date        = NewDate,
             Note        = NewNote,
             CategoryId  = NewCategory.Id
-        };
-
-        _db.Transactions.Add(transaction);
+        });
         await _db.SaveChangesAsync();
 
         NewAmount      = 0;
@@ -75,11 +82,14 @@ public partial class TransactionsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task DeleteTransactionAsync(Transaction? transaction)
+    private async Task DeleteTransactionAsync(TransactionRow? row)
     {
-        if (transaction is null) return;
-        _db.Transactions.Remove(transaction);
+        if (row is null) return;
+        _db.Transactions.Remove(row.Transaction);
         await _db.SaveChangesAsync();
         await LoadAsync();
     }
+
+    private void OnCurrencyChanged(object? sender, PropertyChangedEventArgs e)
+        => OnPropertyChanged(nameof(AmountLabel));
 }

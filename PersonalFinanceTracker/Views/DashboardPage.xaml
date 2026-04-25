@@ -1,6 +1,7 @@
 <UserControl x:Class="PersonalFinanceTracker.Views.DashboardPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="30">
         <StackPanel>
 
@@ -20,57 +21,74 @@
 
             <!-- Summary cards -->
             <UniformGrid Columns="3" Margin="0,0,0,24">
-
-                <!-- Balance -->
                 <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
                     <StackPanel>
                         <TextBlock Text="Balance" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
                                    Foreground="{StaticResource PrimaryBrush}"
-                                   Text="{Binding Balance, StringFormat={}{0:N0} Ft}"/>
+                                   Text="{Binding BalanceFormatted}"/>
                         <TextBlock Text="💳 Current balance" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Income -->
                 <Border Style="{StaticResource CardStyle}" Margin="6,0">
                     <StackPanel>
                         <TextBlock Text="Total Income" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
                                    Foreground="{StaticResource IncomeBrush}"
-                                   Text="{Binding TotalIncome, StringFormat={}{0:N0} Ft}"/>
+                                   Text="{Binding TotalIncomeFormatted}"/>
                         <TextBlock Text="📈 Sum of income" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Expense -->
                 <Border Style="{StaticResource CardStyle}" Margin="12,0,0,0">
                     <StackPanel>
                         <TextBlock Text="Total Expense" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
                                    Foreground="{StaticResource ExpenseBrush}"
-                                   Text="{Binding TotalExpense, StringFormat={}{0:N0} Ft}"/>
+                                   Text="{Binding TotalExpenseFormatted}"/>
                         <TextBlock Text="📉 Sum of expenses" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-
             </UniformGrid>
 
-            <!-- Placeholder for charts (LiveCharts will be added in next commit) -->
-            <Border Style="{StaticResource CardStyle}">
-                <StackPanel HorizontalAlignment="Center" Margin="0,40">
-                    <TextBlock Text="📊" FontSize="48" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Charts coming soon..." FontSize="16"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
-                </StackPanel>
-            </Border>
+            <!-- Charts row -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Pie: expenses by category -->
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                    <StackPanel>
+                        <TextBlock Text="Expenses by Category" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <lvc:PieChart Height="280"
+                                      Series="{Binding ExpenseByCategory}"
+                                      LegendPosition="Right"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Bar: monthly income vs expense -->
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="12,0,0,0">
+                    <StackPanel>
+                        <TextBlock Text="Monthly Income vs Expense" FontSize="16" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <lvc:CartesianChart Height="280"
+                                            Series="{Binding MonthlySeries}"
+                                            XAxes="{Binding MonthlyXAxes}"
+                                            YAxes="{Binding MonthlyYAxes}"
+                                            LegendPosition="Top"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
         </StackPanel>
     </ScrollViewer>
