@@ -13,9 +13,9 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private decimal _totalIncome;
     [ObservableProperty] private decimal _totalExpense;
     [ObservableProperty] private decimal _balance;
-    [ObservableProperty] private string _selectedPeriod = "Ez a hónap";
+    [ObservableProperty] private string _selectedPeriod = "This Month";
 
-    public List<string> Periods { get; } = ["Ez a hónap", "Utolsó 3 hónap", "Ez az év", "Összes"];
+    public List<string> Periods { get; } = ["This Month", "Last 3 Months", "This Year", "All Time"];
 
     public DashboardViewModel(AppDbContext db)
     {
@@ -44,10 +44,10 @@ public partial class DashboardViewModel : ObservableObject
         var now = DateTime.Today;
         return SelectedPeriod switch
         {
-            "Ez a hónap"      => (new DateTime(now.Year, now.Month, 1), now),
-            "Utolsó 3 hónap"  => (now.AddMonths(-3), now),
-            "Ez az év"        => (new DateTime(now.Year, 1, 1), now),
-            _                 => (DateTime.MinValue, now)
+            "This Month"     => (new DateTime(now.Year, now.Month, 1), now),
+            "Last 3 Months"  => (now.AddMonths(-3), now),
+            "This Year"      => (new DateTime(now.Year, 1, 1), now),
+            _                => (DateTime.MinValue, now)
         };
     }
 }

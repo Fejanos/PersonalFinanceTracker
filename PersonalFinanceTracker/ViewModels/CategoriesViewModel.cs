@@ -14,10 +14,20 @@ public partial class CategoriesViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<Category> _categories = [];
     [ObservableProperty] private string _newName = string.Empty;
     [ObservableProperty] private string _newIcon = "📁";
-    [ObservableProperty] private string _newColor = "#607D8B";
     [ObservableProperty] private CategoryType _newType = CategoryType.Expense;
 
     public List<CategoryType> CategoryTypes { get; } = [CategoryType.Income, CategoryType.Expense, CategoryType.Both];
+
+    public List<string> AvailableIcons { get; } =
+    [
+        "📁", "💼", "💻", "📈", "💰", "💵", "💳", "🏦",
+        "🛒", "🍔", "🍕", "☕", "🍺", "🛍️", "🎁",
+        "🏠", "🏢", "🚗", "🚌", "✈️", "⛽", "🚕",
+        "🎬", "🎮", "🎵", "📚", "🏖️", "🎨",
+        "💊", "🏥", "💉", "🩺",
+        "👕", "👟", "👜", "💄",
+        "📱", "💡", "🔧", "📦", "🐶", "🐱", "🌳"
+    ];
 
     public CategoriesViewModel(AppDbContext db)
     {
@@ -39,10 +49,9 @@ public partial class CategoriesViewModel : ObservableObject
 
         _db.Categories.Add(new Category
         {
-            Name  = NewName,
-            Icon  = NewIcon,
-            Color = NewColor,
-            Type  = NewType
+            Name = NewName,
+            Icon = NewIcon,
+            Type = NewType
         });
 
         await _db.SaveChangesAsync();

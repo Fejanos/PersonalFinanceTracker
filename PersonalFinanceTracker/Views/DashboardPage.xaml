@@ -9,7 +9,7 @@
                 <StackPanel DockPanel.Dock="Left">
                     <TextBlock Text="Dashboard" FontSize="26" FontWeight="Bold"
                                Foreground="{StaticResource TextPrimaryBrush}"/>
-                    <TextBlock Text="Pénzügyi áttekintő" FontSize="14"
+                    <TextBlock Text="Financial overview" FontSize="14"
                                Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                 </StackPanel>
                 <ComboBox DockPanel.Dock="Right" VerticalAlignment="Center"
@@ -24,17 +24,12 @@
                 <!-- Balance -->
                 <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
                     <StackPanel>
-                        <TextBlock Text="Egyenleg" FontSize="13"
+                        <TextBlock Text="Balance" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
-                                   Foreground="{StaticResource PrimaryBrush}">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0:N0} Ft">
-                                    <Binding Path="Balance"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <TextBlock Text="💳 Jelenlegi egyenleg" FontSize="12"
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   Text="{Binding Balance, StringFormat={}{0:N0} Ft}"/>
+                        <TextBlock Text="💳 Current balance" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
@@ -42,17 +37,12 @@
                 <!-- Income -->
                 <Border Style="{StaticResource CardStyle}" Margin="6,0">
                     <StackPanel>
-                        <TextBlock Text="Összes bevétel" FontSize="13"
+                        <TextBlock Text="Total Income" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
-                                   Foreground="{StaticResource IncomeBrush}">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0:N0} Ft">
-                                    <Binding Path="TotalIncome"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <TextBlock Text="📈 Bevételek összege" FontSize="12"
+                                   Foreground="{StaticResource IncomeBrush}"
+                                   Text="{Binding TotalIncome, StringFormat={}{0:N0} Ft}"/>
+                        <TextBlock Text="📈 Sum of income" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
@@ -60,17 +50,12 @@
                 <!-- Expense -->
                 <Border Style="{StaticResource CardStyle}" Margin="12,0,0,0">
                     <StackPanel>
-                        <TextBlock Text="Összes kiadás" FontSize="13"
+                        <TextBlock Text="Total Expense" FontSize="13"
                                    Foreground="{StaticResource TextSecondaryBrush}"/>
                         <TextBlock FontSize="28" FontWeight="Bold" Margin="0,8,0,0"
-                                   Foreground="{StaticResource ExpenseBrush}">
-                            <TextBlock.Text>
-                                <MultiBinding StringFormat="{}{0:N0} Ft">
-                                    <Binding Path="TotalExpense"/>
-                                </MultiBinding>
-                            </TextBlock.Text>
-                        </TextBlock>
-                        <TextBlock Text="📉 Kiadások összege" FontSize="12"
+                                   Foreground="{StaticResource ExpenseBrush}"
+                                   Text="{Binding TotalExpense, StringFormat={}{0:N0} Ft}"/>
+                        <TextBlock Text="📉 Sum of expenses" FontSize="12"
                                    Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
@@ -81,7 +66,7 @@
             <Border Style="{StaticResource CardStyle}">
                 <StackPanel HorizontalAlignment="Center" Margin="0,40">
                     <TextBlock Text="📊" FontSize="48" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Grafikonok hamarosan..." FontSize="16"
+                    <TextBlock Text="Charts coming soon..." FontSize="16"
                                Foreground="{StaticResource TextSecondaryBrush}"
                                HorizontalAlignment="Center" Margin="0,12,0,0"/>
                 </StackPanel>

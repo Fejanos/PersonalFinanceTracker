@@ -11,16 +11,16 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="0" Margin="0,0,0,24">
-            <TextBlock Text="Tranzakciók" FontSize="26" FontWeight="Bold"
+            <TextBlock Text="Transactions" FontSize="26" FontWeight="Bold"
                        Foreground="{StaticResource TextPrimaryBrush}"/>
-            <TextBlock Text="Bevételek és kiadások kezelése" FontSize="14"
+            <TextBlock Text="Manage income and expenses" FontSize="14"
                        Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
         </StackPanel>
 
         <!-- Add transaction form -->
         <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,20">
             <StackPanel>
-                <TextBlock Text="Új tranzakció" FontSize="16" FontWeight="SemiBold"
+                <TextBlock Text="New transaction" FontSize="16" FontWeight="SemiBold"
                            Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16"/>
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -32,31 +32,34 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                        <TextBlock Text="Leírás" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Description" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Margin="4,0">
-                        <TextBlock Text="Összeg (Ft)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Amount (Ft)" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding NewAmount, UpdateSourceTrigger=PropertyChanged}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Margin="4,0">
-                        <TextBlock Text="Típus" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Type" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding TransactionTypes}"
                                   SelectedItem="{Binding NewType}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="3" Margin="4,0">
-                        <TextBlock Text="Kategória" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Category" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding Categories}"
                                   SelectedItem="{Binding NewCategory}"
                                   DisplayMemberPath="Name"/>
                     </StackPanel>
 
-                    <Button Grid.Column="4" Style="{StaticResource PrimaryButton}"
-                            Content="+ Hozzáad" VerticalAlignment="Bottom" Margin="8,0,0,0"
-                            Command="{Binding AddTransactionCommand}"/>
+                    <StackPanel Grid.Column="4" Margin="8,0,0,0" VerticalAlignment="Bottom">
+                        <TextBlock Text=" " FontSize="12" Margin="0,0,0,4"/>
+                        <Button Style="{StaticResource PrimaryButton}"
+                                Content="+ Add"
+                                Command="{Binding AddTransactionCommand}"/>
+                    </StackPanel>
                 </Grid>
             </StackPanel>
         </Border>
@@ -66,11 +69,11 @@
             <DataGrid ItemsSource="{Binding Transactions}"
                       SelectedItem="{Binding SelectedTransaction}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Dátum" Width="110"
+                    <DataGridTextColumn Header="Date" Width="110"
                                         Binding="{Binding Date, StringFormat=yyyy.MM.dd}"/>
-                    <DataGridTextColumn Header="Leírás" Width="*"
+                    <DataGridTextColumn Header="Description" Width="*"
                                         Binding="{Binding Description}"/>
-                    <DataGridTemplateColumn Header="Kategória" Width="140">
+                    <DataGridTemplateColumn Header="Category" Width="160">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock>
@@ -81,20 +84,20 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Típus" Width="100">
+                    <DataGridTemplateColumn Header="Type" Width="100">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock>
+                                <TextBlock FontWeight="SemiBold">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Type}" Value="{x:Static models:TransactionType.Income}">
                                                     <Setter Property="Foreground" Value="{StaticResource IncomeBrush}"/>
-                                                    <Setter Property="Text" Value="Bevétel"/>
+                                                    <Setter Property="Text" Value="Income"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding Type}" Value="{x:Static models:TransactionType.Expense}">
                                                     <Setter Property="Foreground" Value="{StaticResource ExpenseBrush}"/>
-                                                    <Setter Property="Text" Value="Kiadás"/>
+                                                    <Setter Property="Text" Value="Expense"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -103,7 +106,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTemplateColumn Header="Összeg" Width="130">
+                    <DataGridTemplateColumn Header="Amount" Width="130">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Amount, StringFormat={}{0:N0} Ft}" FontWeight="SemiBold">
