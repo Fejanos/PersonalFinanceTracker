@@ -45,18 +45,34 @@ public class GeminiService
 
         var url = $"{Endpoint}/{Model}:generateContent?key={ApiKey}";
         using var resp = await _http.PostAsJsonAsync(url, requestBody);
-        resp.EnsureSuccessStatusCode();
 
         var json = await resp.Content.ReadAsStringAsync();
         using var doc = JsonDocument.Parse(json);
+        var root = doc.RootElement;
 
-        var text = doc.RootElement
-            .GetProperty("candidates")[0]
-            .GetProperty("content")
-            .GetProperty("parts")[0]
-            .GetProperty("text")
-            .GetString();
+        if (!resp.IsSuccessStatusCode)
+        {
+            var apiMessage = root.TryGetProperty("error", out var err) &&
+                             err.TryGetProperty("message", out var msg)
+                ? msg.GetString()
+                : json;
+            throw new InvalidOperationException($"Gemini API error: {apiMessage}");
+        }
 
-        return text?.Trim().Trim('"', '.', ',');
+        if (!root.TryGetProperty("candidates", out var candidates) ||
+            candidates.GetArrayLength() == 0)
+            return null;
+
+        var candidate = candidates[0];
+        if (!candidate.TryGetProperty("content", out var content) ||
+            !content.TryGetProperty("parts", out var parts) ||
+            parts.GetArrayLength() == 0 ||
+            !parts[0].TryGetProperty("text", out var textElement))
+        {
+            var reason = candidate.TryGetProperty("finishReason", out var fr) ? fr.GetString() : "unknown";
+            throw new InvalidOperationException($"Gemini returned no text (finishReason: {reason}).");
+        }
+
+        return textElement.GetString()?.Trim().Trim('"', '.', ',');
     }
 }
