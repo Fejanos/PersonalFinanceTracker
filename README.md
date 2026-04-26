@@ -9,6 +9,7 @@ A modern desktop application for tracking personal income and expenses, built wi
 ## 📑 Table of Contents
 
 - [Features](#-features)
+- [Screenshots](#-screenshots)
 - [Tech Stack](#-tech-stack)
 - [Architecture](#-architecture)
 - [Project Structure](#-project-structure)
@@ -43,6 +44,25 @@ A modern desktop application for tracking personal income and expenses, built wi
 | ✨ **AI category suggestion** | Click a button and Google Gemini suggests the most appropriate category based on the transaction description |
 | 🎨 **Modern UI** | Custom-styled controls, sidebar navigation, top bar, card-based dashboard, polished dark sidebar |
 | 💾 **Local persistence** | SQLite database via Entity Framework Core with code-first migrations |
+
+---
+
+## 📸 Screenshots
+
+### Dashboard
+Summary cards with live currency conversion, plus a pie chart of expenses by category and a 6-month income vs. expense bar chart.
+
+![Dashboard](screenshots/dashboard.PNG)
+
+### Transactions
+Add transactions with the inline form (note the **✨ AI** button for Gemini-powered category suggestions), export the full list to CSV, and delete entries from the grid.
+
+![Transactions](screenshots/transactions.PNG)
+
+### Categories
+Manage your own categories with an emoji picker and income/expense/both type selector.
+
+![Categories](screenshots/categories.PNG)
 
 ---
 
@@ -547,7 +567,6 @@ dotnet ef database update    # optional — Migrate() runs on startup anyway
 
 Possible next features (not yet implemented):
 
-- [ ] **README screenshots** of the dashboard and forms
 - [ ] **Edit transaction** (currently only add/delete)
 - [ ] **Filter / search** the transactions grid (by date, category, type)
 - [ ] **Dark mode** toggle
